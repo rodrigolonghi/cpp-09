@@ -72,7 +72,9 @@ bool	BitcoinExchange::isValidInputDate(std::string iDate) {
 
 	if (year < 2009 || year > 2022 || month < 1 || month > 12 || day < 1 || day > 31)
 		return false;
-	if (iDate < "2009-01-02")
+	if (month == 2 && day > 29)
+		return false;
+	if (iDate < "2009-01-02" || iDate > "2022-03-29")
 		return false;
 	return true;
 }
@@ -110,7 +112,7 @@ void	BitcoinExchange::displayLine(std::string inputLine, int count) {
 		return ;
 	}
 	if (iNbr > 1000) {
-		std::cout << "Error: too large a number.\n";
+		std::cout << "Error: too large number.\n";
 		return ;
 	}
 

@@ -11,6 +11,7 @@ OBJ_DIR	=	objs
 OBJ	=	$(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
 all:	$(NAME)
+	chmod -r invalidFile.txt
 
 $(NAME): $(OBJ_DIR) $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
@@ -24,6 +25,7 @@ $(OBJ_DIR):
 clean:
 	rm -rf $(OBJ_DIR)
 	rm -f leaks.txt
+	chmod +r invalidFile.txt
 
 fclean:	clean
 	rm -f $(NAME)

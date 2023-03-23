@@ -14,6 +14,7 @@ class BitcoinExchange {
 		std::vector<std::string>	db;
 
 		void	displayLine(std::string inputLine, int count);
+		bool	isValidInputDate(std::string iDate);
 
 	public:
 		BitcoinExchange();
@@ -23,8 +24,7 @@ class BitcoinExchange {
 
 		std::vector<std::string>	getDb() const;
 
-		int		displayValues(std::string input);
-		bool	isValidInputDate(std::string iDate);
+		int	displayValues(std::string input);
 };
 
 std::ostream	&operator<<(std::ostream &o, BitcoinExchange const &b);
