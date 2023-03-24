@@ -1,12 +1,25 @@
 #include "BitcoinExchange.hpp"
 
 BitcoinExchange::BitcoinExchange() {
+	int				pos;
 	char			buff[LINE_SIZE];
 	std::ifstream	data("data.csv");
+	std::string		temp;
+	std::string		date;
+	float			value;
 
+	pos = 0;
 	while (data) {
 		data.getline(buff, LINE_SIZE);
-		this->db.push_back(buff);
+		temp = buff;
+		if (pos == 0 || temp.size() == 0) {
+			pos++;
+			continue;
+		}
+		date = temp.substr(0, 10);
+		value = std::stof(temp.substr(11));
+		this->db[date] = value;
+		pos++;
 	}
 }
 
@@ -19,13 +32,11 @@ BitcoinExchange::BitcoinExchange(BitcoinExchange const &src) {
 }
 
 BitcoinExchange &BitcoinExchange::operator=(BitcoinExchange const &rhs) {
-	for (size_t i = 0; i < rhs.db.size(); i++) {
-		this->db.push_back(rhs.db[i]);
-	}
+	this->db = rhs.db;
 	return *this;
 }
 
-std::vector<std::string>	BitcoinExchange::getDb() const {
+std::map<std::string, float>	BitcoinExchange::getDb() const {
 	return (this->db);
 }
 
@@ -81,9 +92,8 @@ bool	BitcoinExchange::isValidInputDate(std::string iDate) {
 
 void	BitcoinExchange::displayLine(std::string inputLine, int count) {
 	int			aux = 0;
-	int			index = 0;
 	float		iNbr;
-	float		dbNbr;
+	float		dbNbr = -1;
 	std::string	iDate;
 
 	if (count == 0 && inputLine == "date | value")
@@ -116,22 +126,22 @@ void	BitcoinExchange::displayLine(std::string inputLine, int count) {
 		return ;
 	}
 
-	for (size_t i = 1; i < this->db.size(); i++) {
-		std::string temp = this->db[i].substr(0, 10);
+	for (std::map<std::string, float>::iterator it = this->db.begin(); it != this->db.end(); it++) {
+		std::string temp = it->first;
 		if (temp == iDate) {
-			index = i;
+			dbNbr = it->second;
 			break;
 		}
-		if (temp > iDate && i > 1) {
-			index = i -1;
+		if (temp > iDate && it != this->db.begin()) {
+			it--;
+			dbNbr = it->second;
 			break;
 		}
 	}
-	if (index == 0) {
+	if (dbNbr == -1) {
 		std::cout << "Error: date not found in data base => " << iDate << std::endl;
 		return ;
 	}
-	dbNbr = std::stof(db[index].substr(11));
 	std::cout << iDate << " => " << iNbr << " = " << iNbr * dbNbr << std::endl;
 }
 
@@ -153,7 +163,7 @@ int	BitcoinExchange::displayValues(std::string input) {
 }
 
 std::ostream	&operator<<(std::ostream &o, BitcoinExchange const &b) {
-	std::vector<std::string>	db = b.getDb();
+	std::map<std::string, float>	db = b.getDb();
 
 	o << "BitcoinExchange with " << db.size() - 1 << " values.\n" << std::endl;
 	return o;
