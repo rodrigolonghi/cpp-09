@@ -27,9 +27,6 @@ void	PmergeMe::insertionSortVector(int p, int q) {
 		}
 		this->vec[j] = tempVal;
 	}
-	std::vector<int>	temp;
-	for (int i = p; i < q; i++)
-		temp.push_back(this->vec[i]);
 }
 
 void	PmergeMe::mergeVector(int p, int q, int r) {
@@ -40,9 +37,9 @@ void	PmergeMe::mergeVector(int p, int q, int r) {
 	std::vector<int>	LA;
 	std::vector<int>	RA;
 
-	for (int i = p; i < q; i++)
+	for (int i = p; i < q + 1; i++)
 		LA.push_back(this->vec[i]);
-	for (int i = q + 1; i < r; i++)
+	for (int i = q + 1; i < r + 1; i++)
 		RA.push_back(this->vec[i]);
 
 	for (int i = p; i < r - p + 1; i++) {
@@ -83,9 +80,6 @@ void	PmergeMe::insertionSortDeque(int p, int q) {
 		}
 		this->deq[j] = tempVal;
 	}
-	std::deque<int>	temp;
-	for (int i = p; i < q; i++)
-		temp.push_back(this->deq[i]);
 }
 
 void	PmergeMe::mergeDeque(int p, int q, int r) {
@@ -96,9 +90,9 @@ void	PmergeMe::mergeDeque(int p, int q, int r) {
 	std::deque<int>	LA;
 	std::deque<int>	RA;
 
-	for (int i = p; i < q; i++)
+	for (int i = p; i < q + 1; i++)
 		LA.push_back(this->deq[i]);
-	for (int i = q + 1; i < r; i++)
+	for (int i = q + 1; i < r + 1; i++)
 		RA.push_back(this->deq[i]);
 
 	for (int i = p; i < r - p + 1; i++) {
@@ -130,7 +124,6 @@ void	PmergeMe::sortWithDeque(int p, int r) {
 }
 
 bool	PmergeMe::isValidInput(char **input) {
-	//TODO: corrigir numero com mais de 1 dígito
 	int			value;
 	std::string	temp;
 
@@ -156,13 +149,13 @@ int	PmergeMe::sort(char **input) {
 		std::cout << "Error\n";
 		return 1;
 	}
-	sortWithVector(0, this->vec.size() - 1);
-	sortWithDeque(0, this->deq.size() - 1);
-	std::cout << "Vec: ";
+	std::cout << "Before: ";
 	for (size_t n = 0; n < this->vec.size(); n++)
 		std::cout << this->vec[n] << " ";
 	std::cout << "\n";
-	std::cout << "Deq: ";
+	sortWithVector(0, this->vec.size() - 1);
+	sortWithDeque(0, this->deq.size() - 1);
+	std::cout << "After:  ";
 	for (size_t n = 0; n < this->deq.size(); n++)
 		std::cout << this->deq[n] << " ";
 	std::cout << "\n";
