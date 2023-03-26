@@ -3,8 +3,6 @@
 PmergeMe::PmergeMe() {}
 
 PmergeMe::~PmergeMe() {
-	this->deq.erase(this->deq.begin());
-	this->vec.erase(this->vec.begin());
 }
 
 PmergeMe::PmergeMe(PmergeMe const &src) {
