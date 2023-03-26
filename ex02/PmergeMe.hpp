@@ -5,6 +5,8 @@
 #include <deque>
 #include <string>
 #include <iostream>
+#include <sys/time.h>
+#include <iomanip>
 
 #define K 5
 
@@ -14,15 +16,17 @@ class PmergeMe {
 		std::deque<int>		deq;
 
 		bool	isValidInput(char **input);
-		void	sortWithVector(int p, int r);
-		void	mergeVector(int p, int q, int r);
-		void	insertionSortVector(int p, int q);
-		void	sortWithDeque(int p, int r);
-		void	mergeDeque(int p, int q, int r);
-		void	insertionSortDeque(int p, int q);
+		void	printResult(char **input, double timeVec, double timeDeq);
+		double	timeNow();
+		template <typename T>
+		void	sortContainer(int x, int y, T& container);
+		template <typename T>
+		void	merge(int x, int y, int z, T& container);
+		template <typename T>
+		void	insertionSort(int x, int y, T& container);
 	public:
 		PmergeMe();
-		~PmergeMe();
+		~PmergeMe(); 
 		PmergeMe(PmergeMe const &src);
 		PmergeMe &operator=(PmergeMe const &rhs);
 
