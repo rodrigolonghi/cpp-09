@@ -61,8 +61,13 @@ int	RPN::calculate(std::string input) {
 					result = elems.front() - result;
 				else if (*it == '*')
 					result = elems.front() * result;
-				else if (*it == '/')
+				else if (*it == '/') {
+					if (result == 0) {
+						std::cout << "Error\n";
+						return (1);
+					}
 					result = elems.front() / result;
+				}
 				elems.pop_front();
 				elems.push_front(result);
 			} else

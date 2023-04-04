@@ -62,3 +62,15 @@ echo "Test 10: \"1.5 + 2\""
 echo "Expected: Error"
 echo -n "Result: "
 ./$BIN "1.5 + 2"
+
+echo
+echo "Test 11: \"+ 1 1\""
+echo "Expected: Error"
+echo -n "Result: "
+./$BIN "+ 1 1"
+
+echo
+echo "Test 12: \"1 0 /\""
+echo "Expected: Error"
+echo -n "Result: "
+./$BIN "1 0 /"

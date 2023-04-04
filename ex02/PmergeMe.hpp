@@ -7,8 +7,7 @@
 #include <iostream>
 #include <sys/time.h>
 #include <iomanip>
-
-#define K 5
+#include <cstdlib>
 
 class PmergeMe {
 	private:

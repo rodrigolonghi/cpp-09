@@ -1,26 +1,26 @@
 #include "BitcoinExchange.hpp"
 
 BitcoinExchange::BitcoinExchange() {
-	int				pos;
-	char			buff[LINE_SIZE];
-	std::ifstream	data("data.csv");
-	std::string		temp;
-	std::string		date;
-	float			value;
+	int				pos = 0;
+	std::string		dataFile = "data.csv";
+	std::ifstream	data(dataFile.c_str());
+	std::string		line;
 
-	pos = 0;
-	while (data) {
-		data.getline(buff, LINE_SIZE);
-		temp = buff;
-		if (pos == 0 || temp.size() == 0) {
+	while (std::getline(data, line)) {
+		if (pos == 0 || line.size() == 0) {
 			pos++;
 			continue;
 		}
-		date = temp.substr(0, 10);
-		value = std::stof(temp.substr(11));
+		std::stringstream ss(line);
+		std::string date;
+		float value;
+
+		std::getline(ss, date, ',');
+		ss >> value;
 		this->db[date] = value;
 		pos++;
 	}
+	data.close();
 }
 
 BitcoinExchange::~BitcoinExchange() {
@@ -40,125 +40,118 @@ std::map<std::string, float>	BitcoinExchange::getDb() const {
 	return (this->db);
 }
 
-bool	BitcoinExchange::isValidInputDate(std::string iDate) {
-	int			aux = 0;
-	int			firstLim = -1;
-	int			secondLim = -1;
-	double		year;
-	double		month;
-	double		day;
+float	BitcoinExchange::getDbValue(const std::map<std::string, float>& dataBase, const std::string& iDate) {
+	if (dataBase.find(iDate) != dataBase.end()) {
+		return dataBase.at(iDate);
+	}
+
+	std::map<std::string, float>::const_iterator upperBound = dataBase.upper_bound(iDate);
+	if (upperBound == dataBase.begin()) {
+		return upperBound->second;
+	}
+	--upperBound;
+	return upperBound->second;
+}
+
+bool	BitcoinExchange::isValidInputNumber(std::string line, float *iNbr) {
+	std::string temp = line.substr(line.find("|") + 1);
+	temp.erase(std::remove_if(temp.begin(), temp.end(), ::isspace), temp.end());
+	if (temp.size() > 4) {
+		std::cout << "Error: too large number.\n";
+		return false;
+	}
+	char arr[temp.size() + 1];
+	for (size_t j = 0; j < temp.size(); j++)
+		arr[j] = temp[j];
+	arr[temp.size()] = '\0';
+	*iNbr = (float) std::strtod(arr, NULL);
+	if (*iNbr < 0) {
+		std::cout << "Error: not a positive number.\n";
+		return false;
+	}
+	if (*iNbr > 1000) {
+		std::cout << "Error: too large number.\n";
+		return false;
+	}
+	return true;
+}
+
+bool	BitcoinExchange::isValidInputDate(std::string inputLine, std::string *iDate) {
+	int	year;
+	int	month;
+	int	day;
 	std::string	temp;
 
-	if (iDate.size() != 10)
-		return false;
-	for (size_t i = 0; i < iDate.size(); i++) {
-		if (iDate[i] == '-')
-		{
-			if (firstLim == -1)
-				firstLim = i;
-			else
-				secondLim = i;
-			aux++;
-		}
-		if (!std::isdigit(iDate[i]) && iDate[i] != '-')
-			return false;
-	}
-	if (aux != 2)
+	temp = inputLine.substr(0, inputLine.find("|"));
+	*iDate = temp;
+	temp.erase(std::remove_if(temp.begin(), temp.end(), ::isspace), temp.end());
+
+	if (temp.size() != 10)
 		return false;
 
-	temp = iDate.substr(0, firstLim);
-	if (temp.size() != 4)
-		return false;
-	year = std::stod(temp);
-
-	temp = iDate.substr(firstLim + 1, secondLim - firstLim - 1);
-	if (temp.size() != 2)
-		return false;
-	month = std::stod(temp);
-
-	temp = iDate.substr(secondLim + 1);
-	if (temp.size() != 2)
-		return false;
-	day = std::stod(temp);
-
+	sscanf(temp.c_str(), "%d-%d-%d", &year, &month, &day);
 	if (year < 2009 || year > 2022 || month < 1 || month > 12 || day < 1 || day > 31)
 		return false;
 	if (month == 2 && day > 29)
 		return false;
-	if (iDate < "2009-01-02" || iDate > "2022-03-29")
+	if (month == 2 && day == 29 && year != 2012 && year != 2016 && year != 2020)
 		return false;
+	if ((month == 4 || month == 6 || month == 9 || month == 11) && day == 31)
+		return false;
+	if (temp < "2009-01-02" || temp > "2022-03-29")
+		return false;
+	*iDate = temp;
+	return true;
+}
+
+bool	BitcoinExchange::isValidLine(std::string line, int count) {
+	if (count == 0 && line == "date | value")
+		return false;
+	if (line.size() == 0)
+		return false;
+	std::string::difference_type n = std::count(line.begin(), line.end(), '|');
+	if (n == 0 || n > 1 || line.size() < 14) {
+		std::cout << "Error: bad input => " << line << std::endl;
+		return false;
+	}
 	return true;
 }
 
 void	BitcoinExchange::displayLine(std::string inputLine, int count) {
-	int			aux = 0;
 	float		iNbr;
-	float		dbNbr = -1;
+	float		dbNbr;
 	std::string	iDate;
 
-	if (count == 0 && inputLine == "date | value")
+	if (!isValidLine(inputLine, count))
 		return ;
-	for (size_t i = 0; i < inputLine.size(); i++) {
-		if (inputLine[i] == '|')
-			aux++;
-	}
-	if (inputLine.size() == 0)
-		return ;
-	if (aux == 0 || aux > 1 || inputLine.size() < 14) {
-		std::cout << "Error: bad input => " << inputLine << std::endl;
-		return ;
-	}
 
-	iDate = inputLine.substr(0, inputLine.find("|"));
-	iDate.erase(std::remove_if(iDate.begin(), iDate.end(), ::isspace), iDate.end());
-	if (!isValidInputDate(iDate)) {
+	if (!isValidInputDate(inputLine, &iDate)) {
 		std::cout << "Error: not a valid date => " << iDate << std::endl;
 		return ;
 	}
 
-	iNbr = std::stof(inputLine.substr(inputLine.find("|") + 1));
-	if (iNbr < 0) {
-		std::cout << "Error: not a positive number.\n";
+	if (!isValidInputNumber(inputLine, &iNbr))
 		return ;
-	}
-	if (iNbr > 1000) {
-		std::cout << "Error: too large number.\n";
-		return ;
-	}
 
-	for (std::map<std::string, float>::iterator it = this->db.begin(); it != this->db.end(); it++) {
-		std::string temp = it->first;
-		if (temp == iDate) {
-			dbNbr = it->second;
-			break;
-		}
-		if (temp > iDate && it != this->db.begin()) {
-			it--;
-			dbNbr = it->second;
-			break;
-		}
-	}
-	if (dbNbr == -1) {
-		std::cout << "Error: date not found in data base => " << iDate << std::endl;
-		return ;
-	}
+	dbNbr = getDbValue(this->db, iDate);
 	std::cout << iDate << " => " << iNbr << " = " << iNbr * dbNbr << std::endl;
 }
 
-int	BitcoinExchange::displayValues(std::string input) {
+int	BitcoinExchange::displayValues(char *input) {
 	int				count = 0;
-	char			buff[LINE_SIZE];
+	std::string		line;
 	std::ifstream	fin(input);
 
 	if (!fin.is_open()) {
 		std::cout << "Error: Failed to open file \"" << input << "\"\n";
 		return (1);
 	}
-	while (fin) {
-		fin.getline(buff, LINE_SIZE);
-		displayLine(buff, count);
+
+	while (std::getline(fin, line)) {
+		displayLine(line, count);
 		count++;
 	}
+	fin.close();
 	return 0;
 }
 

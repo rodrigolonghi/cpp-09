@@ -6,15 +6,20 @@
 #include <fstream>
 #include <string>
 #include <cctype>
-
-#define LINE_SIZE 42
+#include <cstdlib>
+#include <algorithm>
+#include <sstream>
+#include <ctime>
 
 class BitcoinExchange {
 	private:
 		std::map<std::string, float>	db;
 
 		void	displayLine(std::string inputLine, int count);
-		bool	isValidInputDate(std::string iDate);
+		float	getDbValue(const std::map<std::string, float>& dataBase, const std::string& iDate);
+		bool	isValidLine(std::string line, int count);
+		bool	isValidInputDate(std::string inputLine, std::string *iDate);
+		bool	isValidInputNumber(std::string line, float *iNbr);
 
 	public:
 		BitcoinExchange();
@@ -24,7 +29,7 @@ class BitcoinExchange {
 
 		std::map<std::string, float>	getDb() const;
 
-		int	displayValues(std::string input);
+		int	displayValues(char *input);
 };
 
 std::ostream	&operator<<(std::ostream &o, BitcoinExchange const &b);

@@ -82,6 +82,7 @@ void	PmergeMe::merge(int x, int y, int z, T& container) {
 
 template <typename T>
 void	PmergeMe::sortContainer(int x, int y, T& container) {
+	int	K = container.size() / 2;
 	if (y - x > K) {
 		int z = (x + y) / 2;
 		sortContainer(x, z, container);
@@ -102,12 +103,27 @@ bool	PmergeMe::isValidInput(char **input) {
 				return false;
 		}
 		temp = input[i];
-		value = std::stoi(temp);
+		if (temp.size() > 10)
+			return false;
+		char arr[temp.size() + 1];
+		for (size_t j = 0; j < temp.size(); j++)
+			arr[j] = temp[j];
+		arr[temp.size()] = '\0';
+		double aux = std::strtod(arr, NULL);
+		if (aux > 2147483647)
+			return false;
+		value = (int) aux;
 		if (value < 0)
 			return false;
-		this->vec.push_back(std::stoi(temp));
-		this->deq.push_back(std::stoi(temp));
+		this->vec.push_back(value);
+		this->deq.push_back(value);
 	}
+	// for (std::vector<int>::iterator it = this->vec.begin(); it != this->vec.end() - 1; it++) {
+	// 	for (std::vector<int>::iterator it2 = it + 1; it2 != this->vec.end(); it2++) {
+	// 		if (*it == *it2)
+	// 			return false;
+	// 	}
+	// }
 	return true;
 }
 
