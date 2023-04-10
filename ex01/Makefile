@@ -10,6 +10,8 @@ HEADER	=	RPN.hpp
 OBJ_DIR	=	objs
 OBJ	=	$(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
+TEST	=	"8 9 * 9 - 9 - 9 - 4 - 1 +"
+
 all:	$(NAME)
 
 $(NAME): $(OBJ_DIR) $(OBJ)
@@ -31,4 +33,4 @@ fclean:	clean
 re: fclean all
 
 leaks: all
-	valgrind --leak-check=full --log-file="leaks.txt" ./$(NAME) input.txt
+	valgrind --leak-check=full --log-file="leaks.txt" ./$(NAME) $(TEST)

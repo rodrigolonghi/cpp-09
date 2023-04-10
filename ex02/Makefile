@@ -10,6 +10,8 @@ HEADER	=	PmergeMe.hpp
 OBJ_DIR	=	objs
 OBJ	=	$(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
+TEST	=	`shuf -i 0-10000 -n 3000 | xargs`
+
 all:	$(NAME)
 
 $(NAME): $(OBJ_DIR) $(OBJ)
@@ -31,4 +33,4 @@ fclean:	clean
 re: fclean all
 
 leaks: all
-	valgrind --leak-check=full --log-file="leaks.txt" ./$(NAME) input.txt
+	valgrind --leak-check=full --log-file="leaks.txt" ./$(NAME) $(TEST)
