@@ -118,12 +118,12 @@ bool	PmergeMe::isValidInput(char **input) {
 		this->vec.push_back(value);
 		this->deq.push_back(value);
 	}
-	// for (std::vector<int>::iterator it = this->vec.begin(); it != this->vec.end() - 1; it++) {
-	// 	for (std::vector<int>::iterator it2 = it + 1; it2 != this->vec.end(); it2++) {
-	// 		if (*it == *it2)
-	// 			return false;
-	// 	}
-	// }
+	for (std::vector<int>::iterator it = this->vec.begin(); it != this->vec.end() - 1; it++) {
+		for (std::vector<int>::iterator it2 = it + 1; it2 != this->vec.end(); it2++) {
+			if (*it == *it2)
+				return false;
+		}
+	}
 	return true;
 }
 
