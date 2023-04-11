@@ -56,10 +56,6 @@ float	BitcoinExchange::getDbValue(const std::map<std::string, float>& dataBase, 
 bool	BitcoinExchange::isValidInputNumber(std::string line, float *iNbr) {
 	std::string temp = line.substr(line.find("|") + 1);
 	temp.erase(std::remove_if(temp.begin(), temp.end(), ::isspace), temp.end());
-	if (temp.size() > 4) {
-		std::cout << "Error: too large number.\n";
-		return false;
-	}
 	char arr[temp.size() + 1];
 	for (size_t j = 0; j < temp.size(); j++)
 		arr[j] = temp[j];
